@@ -1,0 +1,6 @@
+pdf2image
+opencv-python
+torch
+torchvision
+requests
+Pillow
