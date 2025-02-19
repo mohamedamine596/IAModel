@@ -1,23 +1,26 @@
 from pdf2image import convert_from_path
 from pdfminer.high_level import extract_text
 from pdf2image.exceptions import PDFPageCountError
-from PIL import Image
-import io
 
 def extract_images_from_pdf(pdf_path):
     """
-    Dummy function to simulate extracting images from a PDF.
-    Returns a list of PIL Image objects.
+    Extracts all pages from a PDF as PIL Image objects.
+    Requires 'poppler' installed for pdf2image.
     """
-    # Replace this with actual PDF image extraction.
-    # The following just returns one blank image example.
-    img = Image.new('RGB', (200, 200), color='white')
-    return [img]
+    try:
+        images = convert_from_path(pdf_path)
+        return images
+    except Exception as e:
+        print(f"Error extracting images from PDF: {e}")
+        return []
 
 def extract_text_from_pdf(pdf_path):
     """
-    Dummy function to simulate extracting text from a PDF.
-    Returns string content.
+    Extracts text from a PDF file using pdfminer.
     """
-    # Replace this with actual PDF text extraction logic.
-    return "Sample extracted PDF text."
+    try:
+        text = extract_text(pdf_path)
+        return text if text else ""
+    except Exception as e:
+        print(f"Error extracting text: {e}")
+        return ""

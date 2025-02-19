@@ -1,31 +1,33 @@
 import requests
 import json
 
-def generate_text_description(detections, api_url, pdf_text):
-    detected_objects = [
-        f"{det['class']} (confidence: {det['confidence']:.2f})"
+def generate_image_caption(detections, api_url, context_text=""):
+    """
+    Generate a caption for an image using the detected objects and optional context.
+    This function sends a request to the Ollama model server to generate a description.
+    """
+    detected_objects = ", ".join([
+        f"{det['class']} (confidence: {det['confidence']:.2f})" 
         for det in detections
-    ]
+    ])
     prompt = (
-        "Considering the detected objects and the provided document context, "
-        "give a concise description of what the image represents. "
-        "Detected objects: " + ", ".join(detected_objects) + ". " +
-        "Document context: " + pdf_text[:500] + "..."
+        f"Provide a concise and creative caption for an image that contains the following objects: {detected_objects}. "
     )
-
+    if context_text:
+        prompt += f"Additional context: {context_text[:500]}..."
+    
     payload = {
-        "model": "deepseek-r1:8b",
+        "model": "ollama-model",  # placeholder model name; replace as needed
         "prompt": prompt,
         "stream": False
     }
-
+    
     print("Payload being sent:", json.dumps(payload, indent=2))
-
+    
     try:
         response = requests.post(api_url, json=payload)
         response.raise_for_status()
         result = response.json()
-
         if "response" in result:
             return result["response"]
         else:

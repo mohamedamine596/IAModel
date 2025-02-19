@@ -3,4 +3,20 @@ Objects detected:
 - bicycle (confidence: 0.88)
 
 Ollama description:
-This image likely contains: person, bicycle. Additional PDF context: Sample extracted PDF text.
+This image likely contains: person, bicycle. Additional PDF context: familly time
+
+On a bright Sunday morning, the Johnson family decided to embark on a delightful adventure 
+together. With the sun shining and a gentle breeze in the air, they packed a picnic basket ﬁlled 
+
+with sandwiches, fruits, and homemade cookies. The parents, Sarah and Tom, led their two 
+energetic children, Lily and Max, to the nearby park, where vibrant ﬂowers bloomed and 
+
+laughter echoed. As they spread their checkered blanket under a sprawling oak tree, the kids 
+
+raced oﬀ to the playground, their giggles mingling with the cheerful chirping of birds. After a fun-
+ﬁlled afternoon of playing tag and ﬂying kites, they gathered around the blanket to enjoy their 
+picnic, sharing stories and savoring the delicious treats. The day was a perfect blend of joy, 
+
+laughter, and family bonding, leaving them with cherished memories to treasure.
+
+
