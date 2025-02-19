@@ -1,7 +1,7 @@
 import os
 from utils.pdf_utils import extract_images_from_pdf, extract_text_from_pdf
 from utils.yolo_utils import load_yolo_model, detect_objects, draw_detections
-from utils.ollama_utils import generate_description
+from utils.ollama_utils import generate_visual_description
 
 def main(pdf_path, api_url):
     # Extract images from PDF
@@ -31,9 +31,9 @@ def main(pdf_path, api_url):
             # Draw detections on the image
             annotated_image = draw_detections(image, detections)
             
-            # Generate description using Ollama API
+            # Generate description using multimodal integration (image and text)
             print("Generating description...")
-            description = generate_description(detections, api_url, pdf_text)
+            description = generate_visual_description(image, detections, api_url, pdf_text)
             
             # Save results
             print("Saving results...")
@@ -41,7 +41,7 @@ def main(pdf_path, api_url):
             
             # Save description to file
             with open(f'outputs/image_{i}_description.txt', 'w') as f:
-                f.write(f"Objects detected:\n")
+                f.write("Objects detected:\n")
                 for det in detections:
                     f.write(f"- {det['class']} (confidence: {det['confidence']:.2f})\n")
                 f.write(f"\nOllama description:\n{description}")

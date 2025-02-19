@@ -1,22 +1,30 @@
 import requests
 import json
+import base64
+from io import BytesIO
 
-def generate_description(detections, api_url, pdf_text):
+def generate_visual_description(image, detections, api_url, pdf_text):
+    # Encode the image to base64
+    buffered = BytesIO()
+    image.save(buffered, format="JPEG")
+    img_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
     detected_objects = [
         f"{det['class']} (confidence: {det['confidence']:.2f})"
         for det in detections
     ]
     prompt = (
-        "Analyze the detected objects and the provided document text. "
-        "Generate an engaging, insightful, and precise one-sentence summary "
-        "of the image's context within the document. "
-        f"Detected objects: {', '.join(detected_objects)}. "
-        f"Document text: {pdf_text}"
+        "[IMG-1] Analyze the image considering both its visual elements and "
+        "the following document context. "
+        "Detected objects: " + ", ".join(detected_objects) + ". " +
+        "Document context: " + pdf_text[:500] + "... " +
+        "Generate one concise sentence describing the image's significance."
     )
 
     payload = {
-        "model": "llava:7b",   
+        "model": "llava:7b",
         "prompt": prompt,
+        "images": [img_base64],
         "stream": False
     }
 
@@ -25,16 +33,12 @@ def generate_description(detections, api_url, pdf_text):
     try:
         response = requests.post(api_url, json=payload)
         response.raise_for_status()
-
-        print("🔍 Raw Response from Ollama API:", response.text)
-
         result = response.json()
 
         if "response" in result:
             return result["response"]
         else:
             return f"Unexpected response format: {result}"
-
     except json.JSONDecodeError:
         return "Error decoding JSON from Ollama API"
     except requests.exceptions.RequestException as e:
