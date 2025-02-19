@@ -1,29 +1,31 @@
 import requests
 import json
+import base64
+from io import BytesIO
 
-def generate_image_caption(detections, api_url, context_text=""):
+def generate_image_caption(image, api_url, context_text=""):
     """
-    Generate a caption for an image using the detected objects and optional context.
+    Generate a caption for an image using the Ollama model.
     This function sends a request to the Ollama model server to generate a description.
     """
-    detected_objects = ", ".join([
-        f"{det['class']} (confidence: {det['confidence']:.2f})" 
-        for det in detections
-    ])
-    prompt = (
-        f"Provide a concise and creative caption for an image that contains the following objects: {detected_objects}. "
-    )
+    # Convert image to base64
+    buffered = BytesIO()
+    image.save(buffered, format="JPEG")
+    img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+    prompt = "Provide a concise and creative caption for this image."
     if context_text:
-        prompt += f"Additional context: {context_text[:500]}..."
-    
+        prompt += f" Additional context: {context_text[:500]}..."
+
     payload = {
-        "model": "ollama-model",  # placeholder model name; replace as needed
+        "model": "llava:7b",
         "prompt": prompt,
-        "stream": False
+        "stream": False,
+        "images": [img_str]
     }
-    
+
     print("Payload being sent:", json.dumps(payload, indent=2))
-    
+
     try:
         response = requests.post(api_url, json=payload)
         response.raise_for_status()
