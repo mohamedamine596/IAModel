@@ -2,12 +2,20 @@ import requests
 import json
 
 def generate_description(detections, api_url, pdf_text):
-    detected_objects = [f"{det['class']} (confidence: {det['confidence']:.2f})" for det in detections]
-
-    prompt = f"In an image extracted from a document, I detected: {', '.join(detected_objects)}. Here is the text of the document {pdf_text}.Provide a brief summary of what this image might represent in the context of the document. Please respond with one short sentence."
+    detected_objects = [
+        f"{det['class']} (confidence: {det['confidence']:.2f})"
+        for det in detections
+    ]
+    prompt = (
+        "Analyze the detected objects and the provided document text. "
+        "Generate an engaging, insightful, and precise one-sentence summary "
+        "of the image's context within the document. "
+        f"Detected objects: {', '.join(detected_objects)}. "
+        f"Document text: {pdf_text}"
+    )
 
     payload = {
-        "model": "deepseek-r1:8b",  # Set the model name
+        "model": "llava:7b",   
         "prompt": prompt,
         "stream": False
     }
@@ -22,8 +30,8 @@ def generate_description(detections, api_url, pdf_text):
 
         result = response.json()
 
-        if 'response' in result:
-            return result['response']
+        if "response" in result:
+            return result["response"]
         else:
             return f"Unexpected response format: {result}"
 
