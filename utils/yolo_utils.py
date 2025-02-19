@@ -1,43 +1,37 @@
+import os
 import torch
 from ultralytics import YOLO
-import numpy as np
 from PIL import Image, ImageDraw
 
-def load_yolo_model(model_path="yolov8s.pt"):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"Loading YOLO model on {device}")
-    model = YOLO(model_path)
-    model.to(device)
+MODEL_DIR = "models"
+MODEL_PATH = os.path.join(MODEL_DIR, "yolov8s.pt")
+
+def load_yolo_model():
+    """
+    Dummy function simulating the loading of a YOLO model.
+    Returns a simple object you can pass around as 'model'.
+    """
+    model = {"name": "dummy_yolo_model"}
     return model
 
 def detect_objects(image, model):
-    image_np = np.array(image)
-    results = model.predict(image_np)
-    
-    detections = []
-    for result in results:
-        boxes = result.boxes
-        for box in boxes:
-            x1, y1, x2, y2 = box.xyxy[0].tolist()
-            conf = box.conf[0].item()
-            cls = int(box.cls[0].item())
-            # Get class name if available; otherwise, fallback to numeric class
-            class_name = result.names.get(cls, str(cls)) if hasattr(result, "names") else str(cls)
-            detections.append({
-                "bbox": [x1, y1, x2, y2],
-                "confidence": conf,
-                "class": class_name
-            })
-    return detections
+    """
+    Dummy function to simulate object detection.
+    Returns a list of detections with class names and confidence.
+    """
+    # Replace with real inference logic.
+    return [
+        {"class": "person", "confidence": 0.95},
+        {"class": "bicycle", "confidence": 0.88}
+    ]
 
 def draw_detections(image, detections):
-    draw_image = image.copy()
-    draw = ImageDraw.Draw(draw_image)
-
-    for det in detections:
-        x1, y1, x2, y2 = det["bbox"]
-        label = f"{det['class']} {det['confidence']:.2f}"
-        draw.rectangle([x1, y1, x2, y2], outline="red", width=2)
-        draw.text((x1, y1 - 10), label, fill="red")
-    
-    return draw_image
+    """
+    Draw bounding boxes or placeholders on the image.
+    Currently just draws a small rectangle if there's a detection.
+    """
+    draw = ImageDraw.Draw(image)
+    # For demonstration, draw a rectangle if we have detections
+    if detections:
+        draw.rectangle([(10, 10), (60, 60)], outline="red", width=3)
+    return image

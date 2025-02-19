@@ -1,20 +1,6 @@
 Objects detected:
-- person (confidence: 0.87)
-- person (confidence: 0.86)
-- bicycle (confidence: 0.74)
-- bicycle (confidence: 0.46)
+- person (confidence: 0.95)
+- bicycle (confidence: 0.88)
 
 Ollama description:
-<think>
-Okay, so I have to figure out how to summarize the given image based on the detected objects and the provided text. Let me start by looking at the data.
-
-The image has two people detected with high confidence: 0.87 and 0.86. So that's pretty confident it's two individuals. Then there are two bicycles, but their confidence levels are lower: 0.74 and 0.46. Hmm, maybe the second bicycle is less clear?
-
-Looking at the document text: A little boy rode his bicycle joyfully down a quiet street. The sun was shining, casting his shadow. He pedaled fast, feeling the wind, laughed, swerved left and right, pretending to race invisible friends. He explored every corner, hit a bump, wobbled but recovered, a dog barked nearby making him giggle. He rang his tiny bell, announcing presence, continued adventure, dreaming of endless rides.
-
-So the text is clearly about a boy riding a bicycle. The two people are likely the same boy, maybe in different poses or parts of the image? Or perhaps it's another person, but the context suggests it's mainly the boy. The bicycles: he has one, so maybe both detections are of that same bike, but with lower confidence on the second. Maybe the system is less sure about the second bicycle.
-
-Putting this together, the image likely depicts a boy riding his bicycle joyfully, as described in the text. Even though two bicycles are detected, it's more plausible that they refer to the same one, maybe at different angles or times. So the summary should focus on the boy and his bicycle activity.
-</think>
-
-The image likely captures a boy riding his bicycle joyfully down a quiet street, reflecting the context described in the document.
+This image likely contains: person, bicycle. Additional PDF context: Sample extracted PDF text.

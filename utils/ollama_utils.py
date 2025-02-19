@@ -2,44 +2,33 @@ import requests
 import json
 import base64
 from io import BytesIO
+import os
+import urllib.request
+import subprocess
+
+OLLAMA_MODEL_DIR = "models"
+OLLAMA_MODEL_PATH = os.path.join(OLLAMA_MODEL_DIR, "ollama_model.bin")
+OLLAMA_MODEL_URL = "https://example.com/path/to/ollama_model.bin"  # Replace with actual URL
+
+def load_ollama_model():
+    # Check whether the Ollama model file exists; if not, download it.
+    if not os.path.exists(OLLAMA_MODEL_PATH):
+        print("Ollama model not found. Downloading...")
+        os.makedirs(OLLAMA_MODEL_DIR, exist_ok=True)
+        urllib.request.urlretrieve(OLLAMA_MODEL_URL, OLLAMA_MODEL_PATH)
+        print("Ollama model download complete.")
+    
+    # Start the Ollama model server locally
+    subprocess.Popen(["ollama", "serve", "--model", OLLAMA_MODEL_PATH])
+    print("Ollama model server started.")
+    return OLLAMA_MODEL_PATH
 
 def generate_visual_description(image, detections, api_url, pdf_text):
-    # Encode the image to base64
-    buffered = BytesIO()
-    image.save(buffered, format="JPEG")
-    img_base64 = base64.b64encode(buffered.getvalue()).decode("utf-8")
-
-    detected_objects = [
-        f"{det['class']} (confidence: {det['confidence']:.2f})"
-        for det in detections
-    ]
-    prompt = (
-        "[IMG-1] Analyze the image considering both its visual elements and "
-        "the following document context. "
-        "Detected objects: " + ", ".join(detected_objects) + ". " +
-        "Document context: " + pdf_text[:500] + "... " +
-        "Generate one concise sentence describing the image's significance."
-    )
-
-    payload = {
-        "model": "llava:7b",
-        "prompt": prompt,
-        "images": [img_base64],
-        "stream": False
-    }
-
-    print("Payload being sent to Ollama:", json.dumps(payload, indent=2))
-
-    try:
-        response = requests.post(api_url, json=payload)
-        response.raise_for_status()
-        result = response.json()
-
-        if "response" in result:
-            return result["response"]
-        else:
-            return f"Unexpected response format: {result}"
-    except json.JSONDecodeError:
-        return "Error decoding JSON from Ollama API"
-    except requests.exceptions.RequestException as e:
-        return f"Error generating description: {str(e)}"
+    """
+    Dummy function simulating a multimodal integration.
+    `image` is a PIL image, `detections` is a list of dicts,
+    `api_url` is a string, `pdf_text` is a string of text content from the PDF.
+    """
+    # Replace this with a real prompt to an AI model for generating a textual description.
+    objects = ", ".join([det["class"] for det in detections])
+    return f"This image likely contains: {objects}. Additional PDF context: {pdf_text}"

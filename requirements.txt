@@ -4,3 +4,9 @@ torch
 torchvision
 requests
 Pillow
+pdfminer.six
+ultralytics
+uvicorn
+fastapi
+python-multipart
+PySide6
