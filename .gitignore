@@ -48,3 +48,4 @@ logs/
 .envrc
 *.ini
 *.toml
+models/ollama_model.bin

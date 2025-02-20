@@ -2,12 +2,17 @@ import os
 import subprocess
 import requests
 import socket
+import sys
+import time
+import threading
 
 # Ollama setup
 OLLAMA_MODEL_DIR = "models"
 OLLAMA_MODEL_PATH = os.path.join(OLLAMA_MODEL_DIR, "ollama_model.bin")
 MODEL_NAME = "llava:7b"
 OLLAMA_DEFAULT_PORT = 11434
+
+loading_flag = [True]
 
 def is_port_in_use(port):
     """Return True if the given TCP port is in use on localhost."""
@@ -17,48 +22,57 @@ def is_port_in_use(port):
 def install_ollama():
     """Installs Ollama if not already installed."""
     try:
-        subprocess.run(["ollama", "--version"], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print("Ollama is already installed.")
+        subprocess.run(["ollama", "--version"], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except FileNotFoundError:
-        print("Installing Ollama...")
-        os.system("curl -fsSL https://ollama.com/install.sh | sh")
-        print("Ollama installation complete.")
+        os.system("curl -fsSL https://ollama.com/install.sh | sh > /dev/null 2>&1")
 
 def download_model():
-    """Attempts to pull the Ollama model, falling back to a dummy model if needed."""
+    """Attempts to pull the Ollama model silently."""
     if not os.path.exists(OLLAMA_MODEL_PATH):
-        print("Ollama model not found locally. Pulling it using the 'ollama pull' command...")
         try:
-            subprocess.run(["ollama", "pull", MODEL_NAME], check=True)
-            print("Ollama model pulled successfully.")
-            # For simulation purposes, create a dummy file to represent the pulled model.
+            subprocess.run(["ollama", "pull", MODEL_NAME], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             os.makedirs(OLLAMA_MODEL_DIR, exist_ok=True)
             with open(OLLAMA_MODEL_PATH, "w") as f:
-                f.write("dummy model content pulled from ollama")
-        except subprocess.CalledProcessError as e:
-            # If pulling fails, fall back to using a dummy model.
-            print(f"Error pulling Ollama model: {e}")
-            print("Using fallback dummy model for testing purposes.")
+                f.write("dummy model content")
+        except subprocess.CalledProcessError:
             os.makedirs(OLLAMA_MODEL_DIR, exist_ok=True)
             with open(OLLAMA_MODEL_PATH, "w") as f:
-                f.write("dummy model content fallback")
-    else:
-        print("Local Ollama model found.")
+                f.write("dummy model content")
 
 def start_ollama():
-    """Starts the Ollama model server if not already running."""
-    if is_port_in_use(OLLAMA_DEFAULT_PORT):
-        print(f"Ollama model server already running on port {OLLAMA_DEFAULT_PORT}.")
-        return
-    print("Starting Ollama model server...")
-    subprocess.Popen(["ollama", "serve"])
-    print("Ollama model server started.")
+    """Starts the Ollama model server silently if not already running."""
+    if not is_port_in_use(OLLAMA_DEFAULT_PORT):
+        subprocess.Popen(["ollama", "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-def load_ollama_model():
-    """Ensures Ollama is installed, pulls the model if needed, and starts the server."""
-    install_ollama()
-    download_model()
-    start_ollama()
+def show_loading_animation():
+    """Shows a simple loading animation in the terminal."""
+    animation = "|/-\\"
+    idx = 0
+    while loading_flag[0]:
+        sys.stdout.write('\rLoading model... ' + animation[idx % len(animation)])
+        sys.stdout.flush()
+        idx += 1
+        time.sleep(0.1)
+    sys.stdout.write('\r' + ' ' * 20 + '\r')  # Clear the loading text
+    sys.stdout.flush()
+
+def load_ollama_model(silent=True):
+    """Silently ensures Ollama is installed, pulls the model if needed, and starts the server."""
+    global loading_flag
+    loading_flag = [True]
+    
+    # Start loading animation in a separate thread
+    loading_thread = threading.Thread(target=show_loading_animation)
+    loading_thread.start()
+    
+    try:
+        install_ollama()
+        download_model()
+        start_ollama()
+    finally:
+        loading_flag[0] = False
+        loading_thread.join()
+    
     return OLLAMA_MODEL_PATH
 
 # Run everything automatically
